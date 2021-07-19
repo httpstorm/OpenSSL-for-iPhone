@@ -28,12 +28,12 @@ set -u
 DEFAULTVERSION="1.1.1k"
 
 # Default (=full) set of targets to build
-DEFAULTTARGETS="ios-sim-cross-x86_64 ios-sim-cross-arm64 ios-cross-arm64 mac-catalyst-x86_64 mac-catalyst-arm64"
+DEFAULTTARGETS="darwin64-x86_64-cc ios-sim-cross-x86_64 ios-sim-cross-arm64 ios-cross-arm64"
 # Excluded targets:
 #   ios-sim-cross-i386  Legacy
 #   ios-cross-armv7s    Dropped by Apple in Xcode 6 (https://www.cocoanetics.com/2014/10/xcode-6-drops-armv7s/)
 #   ios-cross-arm64e    Not in use as of Xcode 12
-#   tvos-sim-cross-x86_64 tvos-sim-cross-arm64 tvos-cross-arm64 watchos-sim-cross-x86_64 watchos-sim-cross-arm64 watchos-cross-armv7k watchos-cross-arm64_32
+#   tvos-sim-cross-x86_64 tvos-sim-cross-arm64 tvos-cross-arm64 watchos-sim-cross-x86_64 watchos-sim-cross-arm64 watchos-cross-armv7k watchos-cross-arm64_32 mac-catalyst-x86_64 mac-catalyst-arm64
 
 # Minimum iOS/tvOS SDK version to build for
 IOS_MIN_SDK_VERSION="12.0"
@@ -189,14 +189,22 @@ finish_build_loop()
     LIBSSL_WATCHOSSIM+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_WATCHOSSIM+=("${TARGETDIR}/lib/libcrypto.a")
     OPENSSLCONF_SUFFIX="watchos_${ARCH}"
-  else # Catalyst
+  elif [[ "${TARGET}" == "mac-catalyst-"* ]]; then
     LIBSSL_CATALYST+=("${TARGETDIR}/lib/libssl.a")
     LIBCRYPTO_CATALYST+=("${TARGETDIR}/lib/libcrypto.a")
     OPENSSLCONF_SUFFIX="catalyst_${ARCH}"
+  else # Darwin
+    LIBSSL+=("${TARGETDIR}/lib/libssl.a")
+    LIBCRYPTO+=("${TARGETDIR}/lib/libcrypto.a")
+    OPENSSLCONF_SUFFIX=""
   fi
 
   # Copy opensslconf.h to bin directory and add to array
-  OPENSSLCONF="opensslconf_${OPENSSLCONF_SUFFIX}.h"
+  if [ -z "${OPENSSLCONF_SUFFIX}" ]; then
+    OPENSSLCONF="opensslconf.h"
+  else
+    OPENSSLCONF="opensslconf_${OPENSSLCONF_SUFFIX}.h"
+  fi
   cp "${TARGETDIR}/include/openssl/opensslconf.h" "${CURRENTPATH}/bin/${OPENSSLCONF}"
   OPENSSLCONF_ALL+=("${OPENSSLCONF}")
 
@@ -396,6 +404,7 @@ echo "  Targets: ${TARGETS}"
 echo "  iOS SDK: ${IOS_SDKVERSION}"
 echo "  tvOS SDK: ${TVOS_SDKVERSION}"
 echo "  watchOS SDK: ${WATCHOS_SDKVERSION}"
+echo "  MacOSX SDK: ${MACOSX_SDKVERSION}"
 if [ "${CONFIG_DISABLE_BITCODE}" == "true" ]; then
   echo "  Bitcode embedding disabled"
 fi
@@ -486,6 +495,8 @@ LIBCRYPTO_WATCHOS=()
 LIBCRYPTO_WATCHOSSIM=()
 LIBSSL_CATALYST=()
 LIBCRYPTO_CATALYST=()
+LIBSSL=()
+LIBCRYPTO=()
 
 # Run relevant build loop
 source "${SCRIPTDIR}/scripts/build-loop-targets.sh"
@@ -552,6 +563,16 @@ if [ ${#LIBSSL_CATALYST[@]} -gt 0 ]; then
   echo "\n=====>Catalyst SSL and Crypto lib files:"
   echo "${CURRENTPATH}/lib/libssl-Catalyst.a"
   echo "${CURRENTPATH}/lib/libcrypto-Catalyst.a"
+fi
+
+# Build Catalyst library if selected for build
+if [ ${#LIBSSL[@]} -gt 0 ]; then
+  echo "Build library for Darwin..."
+  lipo -create ${LIBSSL[@]} -output "${CURRENTPATH}/lib/libssl.a"
+  lipo -create ${LIBCRYPTO[@]} -output "${CURRENTPATH}/lib/libcrypto.a"
+  echo "\n=====>MacOSX SSL and Crypto lib files:"
+  echo "${CURRENTPATH}/lib/libssl.a"
+  echo "${CURRENTPATH}/lib/libcrypto.a"
 fi
 
 # Copy include directory

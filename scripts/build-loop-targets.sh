@@ -28,6 +28,8 @@ do
     SDKVERSION="${WATCHOS_SDKVERSION}"
   elif [[ "${TARGET}" == "mac-catalyst"* ]]; then
     SDKVERSION="${MACOSX_SDKVERSION}"
+  elif [[ "${TARGET}" == "darwin64-"* ]]; then
+    SDKVERSION="${MACOSX_SDKVERSION}"
   else
     SDKVERSION="${IOS_SDKVERSION}"
   fi
@@ -38,6 +40,7 @@ do
   export TVOS_MIN_SDK_VERSION
   export WATCHOS_MIN_SDK_VERSION
   export CONFIG_DISABLE_BITCODE
+  NATIVE="false"
 
   # Determine platform
   if [[ "${TARGET}" == "ios-sim-cross-"* ]]; then
@@ -52,6 +55,9 @@ do
     PLATFORM="WatchOS"
   elif [[ "${TARGET}" == "mac-catalyst-"* ]]; then
     PLATFORM="MacOSX"
+  elif [[ "${TARGET}" == "darwin64-"* ]]; then
+    PLATFORM="MacOSX"
+    NATIVE="true"
   else
     PLATFORM="iPhoneOS"
   fi
@@ -63,6 +69,13 @@ do
   export CROSS_COMPILE="${DEVELOPER}/Toolchains/XcodeDefault.xctoolchain/usr/bin/"
   export CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
   export CROSS_SDK="${PLATFORM}${SDKVERSION}.sdk"
+
+  if [ "${NATIVE}" == "true" ]; then
+    export ARCH="x86_64"
+    export CROSS_COMPILE=""
+    export CROSS_TOP=""
+    export CROSS_SDK=""
+  fi
 
   # Prepare TARGETDIR and SOURCEDIR
   prepare_target_source_dirs
