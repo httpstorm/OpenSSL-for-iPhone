@@ -19,7 +19,7 @@ dirclean:
 	rm -rf lib
 	rm -rf src
 	rm -rf include/openssl
-	rm -f *.gz
+#	rm -f *.gz
 
 rebuild:
 	clear ; printf '\033[3J'
