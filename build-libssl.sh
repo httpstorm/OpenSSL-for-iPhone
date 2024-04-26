@@ -25,10 +25,10 @@ set -u
 # SCRIPT DEFAULTS
 
 # Default version in case no version is specified
-DEFAULTVERSION="3.2.1"
+DEFAULTVERSION="3.3.0"
 
 # Default (=full) set of targets to build
-DEFAULTTARGETS="darwin64-x86_64-cc ios64-cross"
+DEFAULTTARGETS="darwin64-x86_64-g ios64-cross-g"
 # Excluded targets:
 #   ios-sim-cross-i386  Legacy
 #   ios-cross-armv7s    Dropped by Apple in Xcode 6 (https://www.cocoanetics.com/2014/10/xcode-6-drops-armv7s/)
