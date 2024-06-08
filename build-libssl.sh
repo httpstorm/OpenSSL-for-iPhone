@@ -25,7 +25,7 @@ set -u
 # SCRIPT DEFAULTS
 
 # Default version in case no version is specified
-DEFAULTVERSION="3.3.0"
+DEFAULTVERSION="3.3.1"
 
 # Default (=full) set of targets to build
 DEFAULTTARGETS="darwin64-x86_64-g ios64-cross-g"
@@ -444,7 +444,9 @@ if [ ! -e ${OPENSSL_ARCHIVE_FILE_NAME} ]; then
 
   # Archive was found, so proceed with download.
   # -O Use server-specified filename for download
-  curl ${CURL_OPTIONS} -O "${OPENSSL_ARCHIVE_URL}"
+  # -R Use timestamp of the remote file
+  # -L Follow 302 redirect
+  curl ${CURL_OPTIONS} -ORL "${OPENSSL_ARCHIVE_URL}"
 
 else
   echo "Using ${OPENSSL_ARCHIVE_FILE_NAME}"
