@@ -25,7 +25,7 @@ set -u
 # SCRIPT DEFAULTS
 
 # Default version in case no version is specified
-DEFAULTVERSION="3.3.1"
+DEFAULTVERSION="3.3.2"
 
 # Default (=full) set of targets to build
 DEFAULTTARGETS="darwin64-x86_64-g ios64-cross-g"
@@ -421,7 +421,7 @@ OPENSSL_ARCHIVE_BASE_NAME="openssl-${VERSION}"
 OPENSSL_ARCHIVE_FILE_NAME="${OPENSSL_ARCHIVE_BASE_NAME}.tar.gz"
 if [ ! -e ${OPENSSL_ARCHIVE_FILE_NAME} ]; then
   echo "Downloading ${OPENSSL_ARCHIVE_FILE_NAME}..."
-  OPENSSL_ARCHIVE_URL="https://www.openssl.org/source/${OPENSSL_ARCHIVE_FILE_NAME}"
+  OPENSSL_ARCHIVE_URL="https://github.com/openssl/openssl/releases/download/${OPENSSL_ARCHIVE_BASE_NAME}/${OPENSSL_ARCHIVE_FILE_NAME}"
 
   # Check whether file exists here (this is the location of the latest version for each branch)
   # -s be silent, -f return non-zero exit status on failure, -I get header (do not download)
