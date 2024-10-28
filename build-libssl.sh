@@ -25,7 +25,7 @@ set -u
 # SCRIPT DEFAULTS
 
 # Default version in case no version is specified
-DEFAULTVERSION="3.3.2"
+DEFAULTVERSION="3.4.0"
 
 # Default (=full) set of targets to build
 DEFAULTTARGETS="darwin64-x86_64-g ios64-cross-g"
